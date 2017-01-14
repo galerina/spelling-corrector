@@ -7,7 +7,7 @@ import (
 )
 
 func (lm *LanguageModel) isValid(query string) bool {
-	for i := 0; i < len(query) - 1; i++ {
+	for i := 0; i < len(query)-1; i++ {
 		if query[i] == ' ' && query[i+1] == ' ' {
 			return false
 		}

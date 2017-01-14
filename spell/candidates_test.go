@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func ExampleTranspose() {
+func ExampleTransposed() {
 	fmt.Println(transposed("act", 0))
 	fmt.Println(transposed("abcd", 0))
 	fmt.Println(transposed("jokester", 6))

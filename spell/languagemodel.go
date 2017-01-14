@@ -33,7 +33,7 @@ func NewLanguageModel(corpusFilePath string) *LanguageModel {
 			scanner := bufio.NewScanner(f)
 			for scanner.Scan() {
 				tokens := strings.Split(scanner.Text(), " ")
-				for i, _ := range tokens {
+				for i := range tokens {
 					lm.Unigrams.Add(tokens[i])
 
 					if i > 0 {
@@ -96,10 +96,8 @@ func (lm *LanguageModel) TermExists(term string) bool {
 	return lm.Unigrams.Count(term) > 0
 }
 
-const languageModelSaveFile = "lm"
-
-func (lm *LanguageModel) Save() {
-	f, err := os.Create(languageModelSaveFile)
+func (lm *LanguageModel) Save(path string) {
+	f, err := os.Create(path)
 	if err != nil {
 		panic(err)
 	}

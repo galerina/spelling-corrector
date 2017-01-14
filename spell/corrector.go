@@ -1,16 +1,18 @@
 package spell
 
 import (
-	"spell-corrector/stringset"
 	"math"
+	"spell-corrector/stringset"
 )
 
 type Corrector struct {
 	lm *LanguageModel
+	em EditModel
+	mu float64
 }
 
-func NewCorrector(lm *LanguageModel) *Corrector {
-	return &Corrector{lm: lm}
+func NewCorrector(lm *LanguageModel, em EditModel, mu float64) *Corrector {
+	return &Corrector{lm: lm, em: em, mu: mu}
 }
 
 // max returns the max string using the less function passed in as a parameter
@@ -33,7 +35,7 @@ func (corrector *Corrector) editProbability(orig string, edited string, distance
 	if distance == 0 {
 		return 0.90
 	} else {
-		return math.Pow(float64(0.1), float64(distance))
+		return math.Pow(corrector.em.EditProbability(orig, edited), float64(distance))
 	}
 }
 
@@ -45,14 +47,15 @@ func distance(s1, s2 string) int {
 	}
 }
 
-const mu = 1.0
 func (corrector *Corrector) Correct(query string) string {
 	candidates := corrector.lm.GetCandidates(query)
 	return max(candidates, func(s1 string, s2 string) bool {
 		dist := distance(s1, query)
-		s1Probability := corrector.editProbability(query, s1, dist) * math.Pow(corrector.queryProb(s1), mu)
+		s1Probability := corrector.editProbability(s1, query, dist) *
+			math.Pow(corrector.queryProb(s1), corrector.mu)
 		dist = distance(s2, query)
-		s2Probability := corrector.editProbability(query, s2, dist) * math.Pow(corrector.queryProb(s2), mu)
+		s2Probability := corrector.editProbability(s2, query, dist) *
+			math.Pow(corrector.queryProb(s2), corrector.mu)
 		return s1Probability < s2Probability
 	})
 }
